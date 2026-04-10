@@ -1,0 +1,65 @@
+PC1:
+/ # ip route show
+default via 192.168.3.1 dev eth0 
+192.168.3.0/24 dev eth0 scope link  src 192.168.3.80 
+/ # ip -6 route show
+2001:db8:e::/64 dev eth0  metric 256 
+fe80::/64 dev eth0  metric 256 
+default via 2001:db8:e::1 dev eth0  metric 1024
+
+PC2:
+/ # ip route show
+default via 172.16.0.1 dev eth0 
+172.16.0.0/24 dev eth0 scope link  src 172.16.0.50 
+/ # ip -6 route show
+2001:db8:2:f::/64 dev eth0  metric 256 
+fe80::/64 dev eth0  metric 256 
+default via 2001:db8:2:f::1 dev eth0  metric 1024
+
+R1:
+vyos@vyos:~$ ip route show
+default via 10.0.0.2 dev eth1 
+10.0.0.0/30 dev eth1  proto kernel  scope link  src 10.0.0.1 
+10.0.2.0/30 via 10.0.0.2 dev eth1 
+10.0.3.0/30 via 10.0.0.2 dev eth1 
+127.0.0.0/8 dev lo  proto kernel  scope link  src 127.0.0.1 
+172.16.0.0/24 via 10.0.0.2 dev eth1 
+192.168.3.0/24 dev eth0  proto kernel  scope link  src 192.168.3.1 
+vyos@vyos:~$ ip -6 route show
+2001:db8:0:ef::/64 via 2001:db8:ef:3::2 dev eth1  metric 1024 
+2001:db8:2:f::/64 via 2001:db8:ef:3::2 dev eth1  metric 1024 
+2001:db8:e::/64 dev eth0  proto kernel  metric 256 
+2001:db8:ef:3::/64 dev eth1  proto kernel  metric 256 
+fe80::/64 dev eth1  proto kernel  metric 256 
+fe80::/64 dev eth0  proto kernel  metric 256
+
+R2:
+vyos@vyos:~$ ip route show
+10.0.0.0/30 dev eth0  proto kernel  scope link  src 10.0.0.2 
+10.0.2.0/30 dev eth1  proto kernel  scope link  src 10.0.2.1 
+127.0.0.0/8 dev lo  proto kernel  scope link  src 127.0.0.1 
+172.16.0.0/24 via 10.0.2.2 dev eth1 
+192.168.3.0/24 via 10.0.0.1 dev eth0 
+vyos@vyos:~$ ip -6 route show
+2001:db8:0:ef::/64 dev eth1  proto kernel  metric 256 
+2001:db8:2:f::/64 via 2001:db8:0:ef::2 dev eth1  metric 1024 
+2001:db8:e::/64 via 2001:db8:ef:3::1 dev eth0  metric 1024 
+2001:db8:ef:3::/64 dev eth0  proto kernel  metric 256 
+fe80::/64 dev eth1  proto kernel  metric 256 
+fe80::/64 dev eth0  proto kernel  metric 256
+
+R3:
+vyos@vyos:~$ ip route show
+10.0.0.0/30 via 10.0.2.1 dev eth1 
+10.0.2.0/30 dev eth1  proto kernel  scope link  src 10.0.2.2 
+127.0.0.0/8 dev lo  proto kernel  scope link  src 127.0.0.1 
+172.16.0.0/24 dev eth0  proto kernel  scope link  src 172.16.0.1 
+192.168.3.0/24 via 10.0.2.1 dev eth1 
+vyos@vyos:~$ ip -6 route show
+2001:db8:0:ef::/64 dev eth1  proto kernel  metric 256 
+2001:db8:2:f::/64 dev eth0  proto kernel  metric 256 
+2001:db8:e::/64 via 2001:db8:0:ef::1 dev eth1  metric 1024 
+2001:db8:ef:3::/64 via 2001:db8:0:ef::1 dev eth1  metric 1024 
+fe80::/64 dev eth1  proto kernel  metric 256 
+fe80::/64 dev eth0  proto kernel  metric 256
+
